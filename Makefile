@@ -7,6 +7,9 @@ libhera: libbinaryen
 
 all: libhera
 
+capi: libhera
+	clang -L. -o capi capi.c -lhera
+
 clean:
 	rm -f libhera.so
 	rm -rf binaryen/build
