@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 #include "evm.h"
 
@@ -136,8 +137,24 @@ int main(int argc, char *argv[]) {
     if (jit->abi_version != EVM_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
-    uint8_t const code[] = "\0asm\1Place some EVM bytecode here";
-    const size_t code_size = sizeof(code);
+
+//    uint8_t const code[] = "\0asm\1Place some EVM bytecode here";
+/*    uint8_t const code[] =
+	"\x00\x61\x73\x6d\x01\x00\x00\x00\x01\x08\x02\x60\x01\x7e\x00\x60"
+	"\x00\x00\x02\x13\x01\x08\x65\x74\x68\x65\x72\x65\x65\x6d\x06\x75"
+	"\x73\x65\x47\x61\x73\x00\x00\x03\x02\x01\x01\x05\x03\x01\x00\x01"
+	"\x07\x08\x01\x04\x6d\x61\x69\x6e\x00\x01\x0a\x09\x01\x07\x00\x42"
+	"\x9a\x05\x10\x00\x0b";
+*/
+
+uint8_t code[2048];
+int fd = open("./aa.wasm", O_RDONLY);
+if (fd < 0)
+  abort();
+size_t code_size = read(fd, code, sizeof(code));
+
+//    const size_t code_size = sizeof(code);
+
     struct evm_uint256be code_hash = {.bytes = {1, 2, 3,}};
     uint8_t const input[] = "Hello World!";
     struct evm_uint256be value = {{1, 0,}};
