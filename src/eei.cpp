@@ -282,6 +282,19 @@ Literal EthereumInterface::callImport(Import *import, LiteralList& arguments) {
       return Literal();
     }
 
+    if (import->base == Name("create")) {
+      vector<uint8_t> code;
+      loadMemory(offset, code, size);
+
+      // It is wasm code
+      if (!(code.size() < 5 || code[0] != 0 || code[1] != 'a' || code[2] != 's' || code[3] != 'm' || code[4] != 1)) {
+        // Meter the contract
+        heraAssert(sentinel(code) == 0, "Invalid contract or metering failed.");
+      }
+
+      // Do create here...
+    }
+
     heraAssert(false, string("Unsupported import called: ") + import->module.str + "::" + import->base.str);
   }
 

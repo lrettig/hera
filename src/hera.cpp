@@ -127,6 +127,12 @@ static struct evm_result evm_execute(
     }
 
     vector<uint8_t> _code(code, code + code_size);
+
+    if (msg.kind == EVM_CREATE) {
+      // Meter the contract
+      heraAssert(sentinel(_code) == 0, "Invalid contract or metering failed.");
+    }
+
     execute(context, _code, *msg, result);
 
     // copy call result
