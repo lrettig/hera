@@ -8,4 +8,8 @@ add_library(hera
 )
 
 target_include_directories(hera PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${evm_include_dir})
-target_link_libraries(hera PRIVATE libevm2wasm binaryen::binaryen)
+if(EVM2WASM)
+    target_compile_definitions(hera PRIVATE HERA_EVM2WASM)
+    target_link_libraries(hera PRIVATE libevm2wasm)
+endif()
+target_link_libraries(hera PRIVATE binaryen::binaryen)

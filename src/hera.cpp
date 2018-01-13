@@ -34,7 +34,9 @@
 #include <wasm-printing.h>
 #include <wasm-validator.h>
 
+#if HERA_EVM2WASM
 #include <evm2wasm.h>
+#endif
 
 #include "evm.h"
 #include "hera.h"
@@ -126,11 +128,14 @@ static struct evm_result evm_execute(
 
     // ensure we can only handle WebAssembly version 1
     if (code_size < 5 || code[0] != 0 || code[1] != 'a' || code[2] != 's' || code[3] != 'm' || code[4] != 1) {
+#if HERA_EVM2WASM
       // Translate EVM bytecode to WASM
-      // string translated = evm2wasm(string{_code.data(), _code.size()});
-      // _code.assign(translated.begin(), translated.end());
+      string translated = evm2wasm(string{_code.data(), _code.size()});
+      _code.assign(translated.begin(), translated.end());
+#else
       ret.status_code = EVM_UNSUPPORTED_CODE_TYPE;
       return ret;
+#endif
     }
 
     execute(context, _code, *msg, result);
