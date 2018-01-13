@@ -122,16 +122,17 @@ static struct evm_result evm_execute(
     ExecutionResult result;
     result.gasLeft = (uint64_t)msg->gas;
 
+    vector<uint8_t> _code(code, code + code_size);
+
     // ensure we can only handle WebAssembly version 1
     if (code_size < 5 || code[0] != 0 || code[1] != 'a' || code[2] != 's' || code[3] != 'm' || code[4] != 1) {
       // Translate EVM bytecode to WASM
-      // code = evm2wasm(code);
-
+      // string translated = evm2wasm(string{_code.data(), _code.size()});
+      // _code.assign(translated.begin(), translated.end());
       ret.status_code = EVM_UNSUPPORTED_CODE_TYPE;
       return ret;
     }
 
-    vector<uint8_t> _code(code, code + code_size);
     execute(context, _code, *msg, result);
 
     // copy call result
