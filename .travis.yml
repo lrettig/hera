@@ -11,9 +11,18 @@ matrix:
           sudo: required
           node_js:
               - "8"
+          env:
+              - EVM2WASM=0
+        - os: linux
+          dist: trusty
+          sudo: required
+          node_js:
+              - "8"
+          env:
+              - EVM2WASM=1
 git:
     depth: 2
 script:
     - mkdir build && cd build
-    - cmake ..
+    - cmake -DEVM2WASM=$EVM2WASM ..
     - cmake --build . -- -j4
