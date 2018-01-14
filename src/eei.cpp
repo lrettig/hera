@@ -260,8 +260,15 @@ Literal EthereumInterface::callImport(Import *import, LiteralList& arguments) {
       uint32_t pathOffset = arguments[0].geti32();
       uint32_t valueOffset = arguments[1].geti32();
 
-      evm_uint256be path = loadUint256(pathOffset);
-      evm_uint256be value = loadUint256(valueOffset);
+      vector<uint8_t> _path(32);
+      loadMemory(pathOffset, _path, 32);
+      evm_uint256be path;
+      memcpy(path.bytes, _path.data(), 32);
+
+      vector<uint8_t> _value(32);
+      loadMemory(valueOffset, _value, 32);
+      evm_uint256be value;
+      memcpy(value.bytes, _value.data(), 32);
 
       context->fn_table->set_storage(context, &msg.address, &path, &value);
 
@@ -274,12 +281,17 @@ Literal EthereumInterface::callImport(Import *import, LiteralList& arguments) {
       uint32_t pathOffset = arguments[0].geti32();
       uint32_t resultOffset = arguments[1].geti32();
 
-      evm_uint256be path = loadUint256(pathOffset);
+      vector<uint8_t> _path(32);
+      loadMemory(pathOffset, _path, 32);
+      evm_uint256be path;
+      memcpy(path.bytes, _path.data(), 32);
 
-      evm_uint256be result;
-      context->fn_table->get_storage(&result, context, &msg.address, &path);
+      evm_uint256be _result;
+      context->fn_table->get_storage(&_result, context, &msg.address, &path);
 
-      storeUint256(result, resultOffset);
+      vector<uint8_t> result(_result.bytes, _result.bytes + 32);
+
+      storeMemory(result, 0, resultOffset, 32);
 
       return Literal();
     }
